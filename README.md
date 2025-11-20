@@ -102,29 +102,77 @@ graph TB
 
 ### Prerequisites
 
-- **Docker** (v20.10+) and **Docker Compose**
-- **Kubernetes** (v1.20+) for production deployments
-- **Node.js** (v18+) for frontend development
 - **Python** (v3.9+) for backend services
-- **Git** configured with username `OumaCavin`
+- **Node.js** (v16+) for frontend development
+- **Docker** (v20.10+) and **Docker Compose** for databases
+- **Git** configured with your GitHub credentials
 
-### Installation
+### Method 1: Automated Setup (Recommended)
 
 ```bash
 # Clone the repository
 git clone https://github.com/OumaCavin/jac-smart-learning.git
 cd jac-smart-learning
 
-# Setup environment
-cp .env.example .env
-cp .env.local.example .env.local
+# Run the automated setup script
+bash setup.sh
 
-# Start with Docker Compose (recommended for development)
+# Start databases
+./start_databases.sh
+
+# Start backend (new terminal)
+./start_backend.sh
+
+# Start frontend (new terminal)
+./start_frontend.sh
+```
+
+### Method 2: Manual Setup
+
+```bash
+# Clone the repository
+git clone https://github.com/OumaCavin/jac-smart-learning.git
+cd jac-smart-learning
+
+# Setup Python backend
+python3 -m venv venv
+source venv/bin/activate
+pip install -r requirements.txt
+
+# Setup frontend
+cd frontend && npm install && cd ..
+
+# Setup databases with Docker
 docker-compose up -d
 
-# Or deploy to Kubernetes
-kubectl apply -f k8s/
+# Start backend
+uvicorn main:app --reload --host 0.0.0.0 --port 8000
+
+# Start frontend (new terminal)
+cd frontend && npm run dev
 ```
+
+### Testing Your Installation
+
+```bash
+# Run comprehensive tests
+bash test.sh
+
+# Test API endpoints
+curl http://localhost:8000/health
+curl http://localhost:8000/docs
+```
+
+### 🌐 Access Points
+
+- **Frontend Dashboard**: http://localhost:3000
+- **Backend API**: http://localhost:8000
+- **API Documentation**: http://localhost:8000/docs
+- **Neo4j Browser**: http://localhost:7474
+- **PostgreSQL**: localhost:5432
+- **Redis**: localhost:6379
+
+📖 **For detailed setup instructions, see [LOCAL_SETUP_GUIDE.md](LOCAL_SETUP_GUIDE.md)**
 
 ### Environment Variables
 
