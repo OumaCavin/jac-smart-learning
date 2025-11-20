@@ -11,7 +11,7 @@ from fastapi import APIRouter, HTTPException, BackgroundTasks, Depends, Query
 from pydantic import BaseModel, Field
 import logging
 
-from ..services.ccg_service import CCGService, NodeType, RelationshipType
+from backend.services.ccg_service import CCGService, NodeType, RelationshipType
 
 logger = logging.getLogger(__name__)
 router = APIRouter(prefix="/api/v1/ccg", tags=["Code Context Graph"])

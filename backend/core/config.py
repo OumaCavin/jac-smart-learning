@@ -8,7 +8,8 @@ Author: Cavin Otieno
 import os
 from pathlib import Path
 from typing import List, Optional
-from pydantic import BaseSettings, validator, Field
+from pydantic import validator, Field
+from pydantic_settings import BaseSettings
 from functools import lru_cache
 
 
@@ -106,7 +107,7 @@ class Settings(BaseSettings):
     # Graph Database (Neo4j)
         # Neo4j Configuration
     NEO4J_URI: str = Field(default="bolt://localhost:7687", env="NEO4J_URI")
-    NEO4J_USER: str = Field(default="neo4j", env="NEO4J_USERNAME")
+    NEO4J_USER: str = Field(default="neo4j", env="NEO4J_USER")
     NEO4J_PASSWORD: str = Field(default="neo4j_password", env="NEO4J_PASSWORD")
     NEO4J_DATABASE: str = Field(default="emas_graph", env="NEO4J_DATABASE")
     

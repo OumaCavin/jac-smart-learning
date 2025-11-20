@@ -11,7 +11,7 @@ from fastapi import APIRouter, HTTPException, BackgroundTasks, Depends, Query
 from pydantic import BaseModel, Field
 import logging
 
-from ..services.quality_assessment import QualityAssessmentEngine, QualityDimension
+from backend.services.quality_assessment import QualityAssessmentEngine, QualityDimension
 
 logger = logging.getLogger(__name__)
 router = APIRouter(prefix="/api/v1/quality", tags=["Quality Assessment"])
