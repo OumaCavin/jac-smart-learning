@@ -594,7 +594,6 @@
 # PostgreSQL
 **/*.backup
 **/*.sql
-!**/backend/init.sql
 
 # MongoDB
 **/dump/
@@ -609,7 +608,6 @@
 **/Dockerfile*
 **/.dockerignore
 **/docker-compose*.yml
-!**/docker-compose.yml
 **/.docker/
 
 # Kubernetes
