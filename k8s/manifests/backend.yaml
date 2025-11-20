@@ -1,0 +1,387 @@
+# EMAS Backend Deployment
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: emas-backend
+  namespace: emas
+  labels:
+    app: emas-backend
+    component: backend
+    author: "cavin-otieno"
+spec:
+  replicas: 3
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+  selector:
+    matchLabels:
+      app: emas-backend
+  template:
+    metadata:
+      labels:
+        app: emas-backend
+        component: backend
+        version: v1.0.0
+    spec:
+      serviceAccountName: emas-service-account
+      containers:
+      - name: emas-backend
+        image: ghcr.io/oumacavin/emas-backend:latest
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 8000
+          name: http
+          protocol: TCP
+        env:
+        # Application configuration
+        - name: APP_NAME
+          valueFrom:
+            configMapKeyRef:
+              name: emas-config
+              key: APP_NAME
+        - name: APP_VERSION
+          valueFrom:
+            configMapKeyRef:
+              name: emas-config
+              key: APP_VERSION
+        - name: ENVIRONMENT
+          valueFrom:
+            configMapKeyRef:
+              name: emas-config
+              key: ENVIRONMENT
+        - name: DEBUG
+          value: "false"
+        
+        # Database configuration
+        - name: DATABASE_URL
+          value: "postgresql://$(DATABASE_USER):$(DATABASE_PASSWORD)@postgres:5432/emas_db"
+        - name: DATABASE_HOST
+          value: "postgres"
+        - name: DATABASE_PORT
+          value: "5432"
+        - name: DATABASE_NAME
+          value: "emas_db"
+        - name: DATABASE_USER
+          valueFrom:
+            secretKeyRef:
+              name: emas-secrets
+              key: DATABASE_USER
+        - name: DATABASE_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: emas-secrets
+              key: DATABASE_PASSWORD
+        
+        # Redis configuration
+        - name: REDIS_URL
+          value: "redis://:$(REDIS_PASSWORD)@redis:6379/0"
+        - name: REDIS_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: emas-secrets
+              key: REDIS_PASSWORD
+        
+        # NATS configuration
+        - name: NATS_URL
+          value: "nats://$(NATS_USER):$(NATS_PASSWORD)@nats:4222"
+        - name: NATS_USER
+          valueFrom:
+            secretKeyRef:
+              name: emas-secrets
+              key: NATS_USER
+        - name: NATS_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: emas-secrets
+              key: NATS_PASSWORD
+        
+        # Security
+        - name: JWT_SECRET
+          valueFrom:
+            secretKeyRef:
+              name: emas-secrets
+              key: JWT_SECRET
+        - name: BCRYPT_ROUNDS
+          value: "12"
+        
+        # AI/LLM Integration
+        - name: OPENAI_API_KEY
+          valueFrom:
+            secretKeyRef:
+              name: emas-secrets
+              key: OPENAI_API_KEY
+        - name: SUPABASE_URL
+          value: "https://rjgrobamzmbcvakwltxt.supabase.co"
+        - name: SUPABASE_ANON_KEY
+          value: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJqZ3JvYmFtem1iY3Zha3dsdHh0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjM1ODc2ODQsImV4cCI6MjA3OTE2MzY4NH0.NH6i7UUor07PevpK7AMzMw7LvLP8j9wtuypfa_azip0"
+        - name: SUPABASE_SERVICE_ROLE
+          value: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJqZ3JvYmFtem1iY3Zha3dsdHh0Iiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc2MzU4NzY4NCwiZXhwIjoyMDc5MTYzNjg0fQ.5m60ck3umars1l2_Yz-BOI5URajEZoDqELkcVglv2lA"
+        - name: SUPABASE_DB_PASSWORD
+          value: "Airtel!23!23"
+        
+        # Monitoring
+        - name: PROMETHEUS_ENABLED
+          valueFrom:
+            configMapKeyRef:
+              name: emas-config
+              key: PROMETHEUS_ENABLED
+        - name: JAEGER_ENABLED
+          valueFrom:
+            configMapKeyRef:
+              name: emas-config
+              key: JAEGER_ENABLED
+        - name: LOKI_ENABLED
+          valueFrom:
+            configMapKeyRef:
+              name: emas-config
+              key: LOKI_ENABLED
+        
+        # Feature flags
+        - name: FEATURE_AI_ANALYSIS
+          valueFrom:
+            configMapKeyRef:
+              name: emas-config
+              key: FEATURE_AI_ANALYSIS
+        - name: FEATURE_REAL_TIME_UPDATES
+          valueFrom:
+            configMapKeyRef:
+              name: emas-config
+              key: FEATURE_REAL_TIME_UPDATES
+        - name: FEATURE_ADVANCED_METRICS
+          valueFrom:
+            configMapKeyRef:
+              name: emas-config
+              key: FEATURE_ADVANCED_METRICS
+        
+        # Kubernetes configuration
+        - name: KUBERNETES_ENABLED
+          valueFrom:
+            configMapKeyRef:
+              name: emas-config
+              key: KUBERNETES_ENABLED
+        
+        resources:
+          requests:
+            memory: "512Mi"
+            cpu: "250m"
+          limits:
+            memory: "1Gi"
+            cpu: "500m"
+        
+        # Health checks
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 8000
+          initialDelaySeconds: 60
+          periodSeconds: 30
+          timeoutSeconds: 10
+          failureThreshold: 3
+        
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: 8000
+          initialDelaySeconds: 30
+          periodSeconds: 10
+          timeoutSeconds: 5
+          failureThreshold: 3
+        
+        # Security context
+        securityContext:
+          allowPrivilegeEscalation: false
+          readOnlyRootFilesystem: true
+          runAsNonRoot: true
+          runAsUser: 1000
+          capabilities:
+            drop:
+            - ALL
+        
+        # Volume mounts
+        volumeMounts:
+        - name: tmp
+          mountPath: /tmp
+        - name: logs
+          mountPath: /app/logs
+        - name: uploads
+          mountPath: /app/uploads
+        
+        # Environment variables
+        - name: PYTHONPATH
+          value: "/app"
+        - name: PYTHONUNBUFFERED
+          value: "1"
+      
+      # Volumes
+      volumes:
+      - name: tmp
+        emptyDir: {}
+      - name: logs
+        emptyDir: {}
+      - name: uploads
+        emptyDir: {}
+      
+      # Node selector for specific hardware requirements
+      nodeSelector:
+        node-type: general
+      
+      # Tolerations for different node types
+      tolerations:
+      - key: "node-type"
+        operator: "Equal"
+        value: "general"
+        effect: "NoSchedule"
+      
+      # Affinity rules
+      affinity:
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 100
+            podAffinityTerm:
+              labelSelector:
+                matchExpressions:
+                - key: app
+                  operator: In
+                  values:
+                  - emas-backend
+              topologyKey: kubernetes.io/hostname
+
+---
+# EMAS Backend Service
+apiVersion: v1
+kind: Service
+metadata:
+  name: emas-backend
+  namespace: emas
+  labels:
+    app: emas-backend
+    component: backend
+    author: "cavin-otieno"
+  annotations:
+    service.beta.kubernetes.io/aws-load-balancer-type: "nlb"
+spec:
+  type: ClusterIP
+  selector:
+    app: emas-backend
+  ports:
+  - name: http
+    port: 80
+    targetPort: 8000
+    protocol: TCP
+
+---
+# EMAS Backend HPA (Horizontal Pod Autoscaler)
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: emas-backend-hpa
+  namespace: emas
+  labels:
+    app: emas-backend
+    component: autoscaling
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: emas-backend
+  minReplicas: 3
+  maxReplicas: 20
+  metrics:
+  - type: Resource
+    resource:
+      name: cpu
+      target:
+        type: Utilization
+        averageUtilization: 70
+  - type: Resource
+    resource:
+      name: memory
+      target:
+        type: Utilization
+        averageUtilization: 80
+  behavior:
+    scaleDown:
+      stabilizationWindowSeconds: 300
+      policies:
+      - type: Percent
+        value: 50
+        periodSeconds: 60
+    scaleUp:
+      stabilizationWindowSeconds: 60
+      policies:
+      - type: Percent
+        value: 100
+        periodSeconds: 60
+      - type: Pods
+        value: 2
+        periodSeconds: 60
+      selectPolicy: Max
+
+---
+# Pod Disruption Budget
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: emas-backend-pdb
+  namespace: emas
+  labels:
+    app: emas-backend
+spec:
+  minAvailable: 2
+  selector:
+    matchLabels:
+      app: emas-backend
+
+---
+# Service Account
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: emas-service-account
+  namespace: emas
+  labels:
+    app: emas
+    component: service-account
+automountServiceAccountToken: false
+
+---
+# Role for service account
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: emas-role
+  namespace: emas
+rules:
+- apiGroups: [""]
+  resources: ["configmaps", "secrets", "services"]
+  verbs: ["get", "list", "watch"]
+- apiGroups: [""]
+  resources: ["pods"]
+  verbs: ["get", "list", "watch", "create", "update", "patch", "delete"]
+- apiGroups: ["apps"]
+  resources: ["deployments"]
+  verbs: ["get", "list", "watch", "create", "update", "patch", "delete"]
+- apiGroups: [""]
+  resources: ["events"]
+  verbs: ["create", "patch"]
+- apiGroups: ["metrics.k8s.io"]
+  resources: ["pods", "nodes"]
+  verbs: ["get", "list"]
+
+---
+# RoleBinding
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: emas-rolebinding
+  namespace: emas
+subjects:
+- kind: ServiceAccount
+  name: emas-service-account
+  namespace: emas
+roleRef:
+  kind: Role
+  name: emas-role
+  apiGroup: rbac.authorization.k8s.io

@@ -1,0 +1,302 @@
+# EMAS Frontend Deployment
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: emas-frontend
+  namespace: emas
+  labels:
+    app: emas-frontend
+    component: frontend
+    author: "cavin-otieno"
+spec:
+  replicas: 2
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+  selector:
+    matchLabels:
+      app: emas-frontend
+  template:
+    metadata:
+      labels:
+        app: emas-frontend
+        component: frontend
+        version: v1.0.0
+    spec:
+      containers:
+      - name: emas-frontend
+        image: ghcr.io/oumacavin/emas-frontend:latest
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 80
+          name: http
+          protocol: TCP
+        env:
+        # Frontend configuration
+        - name: NODE_ENV
+          value: "production"
+        - name: VITE_APP_NAME
+          value: "Enterprise Multi-Agent System"
+        - name: VITE_API_URL
+          value: "http://emas-backend"
+        - name: VITE_WS_URL
+          value: "ws://emas-backend"
+        
+        # Application settings
+        - name: REACT_APP_VERSION
+          value: "1.0.0"
+        - name: REACT_APP_AUTHOR
+          value: "Cavin Otieno"
+        - name: REACT_APP_CONTACT
+          value: "cavin.otieno012@gmail.com"
+        - name: REACT_APP_PHONE
+          value: "+254708101604"
+        
+        # Feature flags
+        - name: REACT_APP_ENABLE_DEBUG
+          value: "false"
+        - name: REACT_APP_ENABLE_PERFORMANCE_MONITORING
+          value: "true"
+        - name: REACT_APP_ENABLE_ERROR_TRACKING
+          value: "true"
+        
+        resources:
+          requests:
+            memory: "128Mi"
+            cpu: "100m"
+          limits:
+            memory: "256Mi"
+            cpu: "200m"
+        
+        # Health checks
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 80
+          initialDelaySeconds: 30
+          periodSeconds: 30
+          timeoutSeconds: 10
+          failureThreshold: 3
+        
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: 80
+          initialDelaySeconds: 10
+          periodSeconds: 10
+          timeoutSeconds: 5
+          failureThreshold: 3
+        
+        # Security context
+        securityContext:
+          allowPrivilegeEscalation: false
+          readOnlyRootFilesystem: true
+          runAsNonRoot: true
+          runAsUser: 101
+          capabilities:
+            drop:
+            - ALL
+
+---
+# EMAS Frontend Service
+apiVersion: v1
+kind: Service
+metadata:
+  name: emas-frontend
+  namespace: emas
+  labels:
+    app: emas-frontend
+    component: frontend
+    author: "cavin-otieno"
+  annotations:
+    service.beta.kubernetes.io/aws-load-balancer-type: "nlb"
+    service.beta.kubernetes.io/aws-load-balancer-ssl-ports: "https"
+    service.beta.kubernetes.io/aws-load-balancer-ssl-cert: "arn:aws:acm:us-east-1:123456789012:certificate/12345678-1234-1234-1234-123456789012"
+spec:
+  type: LoadBalancer
+  selector:
+    app: emas-frontend
+  ports:
+  - name: http
+    port: 80
+    targetPort: 80
+    protocol: TCP
+  - name: https
+    port: 443
+    targetPort: 80
+    protocol: TCP
+
+---
+# EMAS Frontend HPA
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: emas-frontend-hpa
+  namespace: emas
+  labels:
+    app: emas-frontend
+    component: autoscaling
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: emas-frontend
+  minReplicas: 2
+  maxReplicas: 10
+  metrics:
+  - type: Resource
+    resource:
+      name: cpu
+      target:
+        type: Utilization
+        averageUtilization: 60
+  - type: Resource
+    resource:
+      name: memory
+      target:
+        type: Utilization
+        averageUtilization: 70
+
+---
+# Ingress for frontend and backend
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: emas-ingress
+  namespace: emas
+  labels:
+    app: emas
+    component: ingress
+  annotations:
+    kubernetes.io/ingress.class: "nginx"
+    kubernetes.io/ingress.global-static-ip-name: "emas-ip"
+    nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+    nginx.ingress.kubernetes.io/use-regex: "true"
+    cert-manager.io/cluster-issuer: "letsencrypt-prod"
+    nginx.ingress.kubernetes.io/rate-limit: "100"
+    nginx.ingress.kubernetes.io/rate-limit-window: "1m"
+    nginx.ingress.kubernetes.io/rate-limit-burst-size: "50"
+    nginx.ingress.kubernetes.io/enable-cors: "true"
+    nginx.ingress.kubernetes.io/cors-allow-origin: "*"
+    nginx.ingress.kubernetes.io/cors-allow-methods: "GET, POST, PUT, DELETE, OPTIONS"
+    nginx.ingress.kubernetes.io/cors-allow-headers: "DNT,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Range,Authorization"
+    nginx.ingress.kubernetes.io/cors-expose-headers: "Content-Length,Content-Range"
+    # Security headers
+    nginx.ingress.kubernetes.io/configuration-snippet: |
+      more_set_headers "X-Frame-Options: SAMEORIGIN";
+      more_set_headers "X-Content-Type-Options: nosniff";
+      more_set_headers "X-XSS-Protection: 1; mode=block";
+      more_set_headers "Referrer-Policy: strict-origin-when-cross-origin";
+      more_set_headers "Content-Security-Policy: default-src 'self' http: https: data: blob: 'unsafe-inline' wss:";
+    # WebSocket support
+    nginx.ingress.kubernetes.io/proxy-read-timeout: "3600"
+    nginx.ingress.kubernetes.io/proxy-send-timeout: "3600"
+    nginx.ingress.kubernetes.io/proxy-connect-timeout: "10"
+    nginx.ingress.kubernetes.io/proxy-body-size: "10m"
+spec:
+  tls:
+  - hosts:
+    - emas.cavinotieno.com
+    - api.emas.cavinotieno.com
+    secretName: emas-tls-secret
+  rules:
+  - host: emas.cavinotieno.com
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: emas-frontend
+            port:
+              number: 80
+      - path: /api
+        pathType: Prefix
+        backend:
+          service:
+            name: emas-backend
+            port:
+              number: 80
+      - path: /ws
+        pathType: Prefix
+        backend:
+          service:
+            name: emas-backend
+            port:
+              number: 80
+  - host: api.emas.cavinotieno.com
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: emas-backend
+            port:
+              number: 80
+      - path: /ws
+        pathType: Prefix
+        backend:
+          service:
+            name: emas-backend
+            port:
+              number: 80
+
+---
+# Certificate (cert-manager)
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: emas-tls-cert
+  namespace: emas
+spec:
+  secretName: emas-tls-secret
+  issuerRef:
+    name: letsencrypt-prod
+    kind: ClusterIssuer
+  commonName:emas.cavinotieno.com
+  dnsNames:
+  - emas.cavinotieno.com
+  - api.emas.cavinotieno.com
+
+---
+# Network Policy for frontend
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: emas-frontend-network-policy
+  namespace: emas
+spec:
+  podSelector:
+    matchLabels:
+      app: emas-frontend
+  policyTypes:
+  - Ingress
+  - Egress
+  ingress:
+  - from:
+    - namespaceSelector:
+        matchLabels:
+          name: ingress-nginx
+    - namespaceSelector:
+        matchLabels:
+          name: kube-system
+    ports:
+    - protocol: TCP
+      port: 80
+  egress:
+  - to: []
+    ports:
+    - protocol: TCP
+      port: 80
+      # Allow egress to backend
+    - to:
+      - podSelector:
+          matchLabels:
+            app: emas-backend
+      ports:
+      - protocol: TCP
+        port: 80

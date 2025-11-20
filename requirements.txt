@@ -1,0 +1,125 @@
+# Enterprise Multi-Agent System Backend Dependencies
+# Core FastAPI and ASGI
+fastapi==0.104.1
+uvicorn[standard]==0.24.0
+pydantic==2.5.0
+pydantic-settings==2.1.0
+
+# Database and ORM
+sqlalchemy[asyncio]==2.0.23
+asyncpg==0.29.0
+alembic==1.13.1
+redis==5.0.1
+
+# Authentication and Security
+python-jose[cryptography]==3.3.0
+passlib[bcrypt]==1.7.4
+python-multipart==0.0.6
+oauthlib==3.2.2
+PyJWT==2.8.0
+
+# WebSocket Support
+websockets==12.0
+
+# Message Queue
+nats-py==2.7.2
+celery[redis]==5.3.4
+kombu==5.3.4
+
+# Code Analysis and AST Parsing
+astroid==3.0.2
+ast-decompiler==0.7.0
+pygments==2.17.2
+
+# AI/LLM Integration
+openai==1.3.8
+supabase==2.3.1
+httpx==0.25.2
+
+# Graph Database
+neo4j==5.15.0
+networkx==3.2.1
+
+# Code Quality Tools
+flake8==7.0.0
+black==23.12.0
+isort==5.13.2
+mypy==1.8.0
+bandit==1.7.5
+
+# Testing
+pytest==7.4.4
+pytest-asyncio==0.21.1
+pytest-cov==4.1.0
+pytest-xdist==3.5.0
+pytest-mock==3.12.0
+httpx==0.25.2
+
+# Monitoring and Observability
+prometheus-client==0.19.0
+opentelemetry-api==1.22.0
+opentelemetry-sdk==1.22.0
+opentelemetry-instrumentation-fastapi==0.43b0
+
+# File Processing
+python-multipart==0.0.6
+aiofiles==23.2.1
+Pillow==10.2.0
+
+# Configuration and Environment
+python-dotenv==1.0.0
+pyyaml==6.0.1
+toml==0.10.2
+
+# Utilities
+click==8.1.7
+rich==13.7.0
+loguru==0.7.2
+python-dateutil==2.8.2
+
+# Load Testing
+locust==2.21.0
+faker==20.1.0
+
+# Documentation
+mkdocs==1.5.3
+mkdocs-material==9.4.8
+
+# Security Scanning
+safety==3.0.1
+bandit==1.7.5
+
+# Performance
+uvloop==0.19.0
+orjson==3.9.12
+
+# CLI Tools
+typer==0.12.3
+
+# Development Tools
+ipython==8.18.1
+ipdb==0.13.13
+debugpy==1.8.0
+
+# Dependency Management
+pip-tools==7.4.0
+
+# Version Pinning Notes:
+# - fastapi: 0.104.1 (LTS version with good performance)
+# - sqlalchemy: 2.0.23 (latest stable version)
+# - asyncpg: 0.29.0 (performance optimized for async operations)
+# - redis: 5.0.1 (stable version for caching)
+# - openai: 1.3.8 (latest stable API version)
+# - prometheus-client: 0.19.0 (compatible with latest Prometheus)
+# - pytest: 7.4.4 (stable testing framework)
+
+# Optional GPU Support (uncomment if needed)
+# torch==2.1.1
+# transformers==4.36.0
+# accelerate==0.25.0
+
+# Development Dependencies (install with pip install -r requirements-dev.txt)
+# jupyter==1.0.0
+# notebook==6.5.4
+# sphinx==7.2.6
+# sphinx-rtd-theme==1.3.0

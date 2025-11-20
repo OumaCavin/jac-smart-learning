@@ -1,0 +1,377 @@
+# Namespace for EMAS
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: emas
+  labels:
+    name: emas
+    environment: production
+    managed-by: cavin-otieno
+
+---
+# ConfigMap for EMAS application configuration
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: emas-config
+  namespace: emas
+  labels:
+    app: emas
+    component: config
+data:
+  APP_NAME: "Enterprise Multi-Agent System"
+  APP_VERSION: "1.0.0"
+  ENVIRONMENT: "production"
+  LOG_LEVEL: "INFO"
+  PROMETHEUS_ENABLED: "true"
+  JAEGER_ENABLED: "true"
+  LOKI_ENABLED: "true"
+  HEALTH_CHECK_ENABLED: "true"
+  METRICS_ENABLED: "true"
+  FEATURE_AI_ANALYSIS: "true"
+  FEATURE_REAL_TIME_UPDATES: "true"
+  FEATURE_ADVANCED_METRICS: "true"
+  FEATURE_SECURITY_SCANNING: "true"
+  FEATURE_CODE_QUALITY: "true"
+  KUBERNETES_ENABLED: "true"
+
+---
+# Secret for sensitive configuration
+apiVersion: v1
+kind: Secret
+metadata:
+  name: emas-secrets
+  namespace: emas
+  labels:
+    app: emas
+    component: secrets
+type: Opaque
+stringData:
+  # JWT Secret (replace with secure random value)
+  JWT_SECRET: "your-super-secret-jwt-key-change-in-production-at-least-64-chars"
+  
+  # Database configuration
+  DATABASE_USER: "emas_user"
+  DATABASE_PASSWORD: "secure_password_production_123"
+  
+  # Redis configuration
+  REDIS_PASSWORD: "redis_password_production_123"
+  
+  # NATS configuration
+  NATS_USER: "emas_user"
+  NATS_PASSWORD: "nats_password_production_123"
+  
+  # Email configuration
+  SMTP_PASSWORD: "<GMAIL_APP_PASSWORD_PLACEHOLDER>"
+  
+  # OAuth2 configuration
+  GITHUB_CLIENT_ID: "<GITHUB_CLIENT_ID_PLACEHOLDER>"
+  GITHUB_CLIENT_SECRET: "<GITHUB_CLIENT_SECRET_PLACEHOLDER>"
+  GOOGLE_CLIENT_ID: "<GOOGLE_CLIENT_ID_PLACEHOLDER>"
+  GOOGLE_CLIENT_SECRET: "<GOOGLE_CLIENT_SECRET_PLACEHOLDER>"
+  
+  # AI/LLM Integration
+  OPENAI_API_KEY: "<OPENAI_API_KEY_PLACEHOLDER>"
+  GOOGLE_API_KEY: "<GOOGLE_API_KEY_PLACEHOLDER>"
+  
+  # Security Vault
+  VAULT_TOKEN: "<VAULT_TOKEN_PLACEHOLDER>"
+  VAULT_ROLE_ID: "<VAULT_ROLE_ID_PLACEHOLDER>"
+  VAULT_SECRET_ID: "<VAULT_SECRET_ID_PLACEHOLDER>"
+
+---
+# PostgreSQL StatefulSet
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: postgres
+  namespace: emas
+  labels:
+    app: postgres
+    component: database
+spec:
+  serviceName: postgres
+  replicas: 1
+  selector:
+    matchLabels:
+      app: postgres
+  template:
+    metadata:
+      labels:
+        app: postgres
+        component: database
+    spec:
+      containers:
+      - name: postgres
+        image: postgres:15-alpine
+        ports:
+        - containerPort: 5432
+          name: postgres
+        env:
+        - name: POSTGRES_DB
+          valueFrom:
+            secretKeyRef:
+              name: emas-secrets
+              key: DATABASE_NAME
+        - name: POSTGRES_USER
+          valueFrom:
+            secretKeyRef:
+              name: emas-secrets
+              key: DATABASE_USER
+        - name: POSTGRES_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: emas-secrets
+              key: DATABASE_PASSWORD
+        - name: PGDATA
+          value: /var/lib/postgresql/data/pgdata
+        volumeMounts:
+        - name: postgres-storage
+          mountPath: /var/lib/postgresql/data
+        - name: postgres-config
+          mountPath: /docker-entrypoint-initdb.d
+        resources:
+          requests:
+            memory: "1Gi"
+            cpu: "500m"
+          limits:
+            memory: "2Gi"
+            cpu: "1000m"
+        livenessProbe:
+          exec:
+            command:
+            - pg_isready
+            - -U
+            - $(POSTGRES_USER)
+            - -d
+            - $(POSTGRES_DB)
+          initialDelaySeconds: 30
+          periodSeconds: 10
+        readinessProbe:
+          exec:
+            command:
+            - pg_isready
+            - -U
+            - $(POSTGRES_USER)
+            - -d
+            - $(POSTGRES_DB)
+          initialDelaySeconds: 5
+          periodSeconds: 5
+      volumes:
+      - name: postgres-config
+        configMap:
+          name: postgres-init
+  volumeClaimTemplates:
+  - metadata:
+      name: postgres-storage
+    spec:
+      accessModes: ["ReadWriteOnce"]
+      resources:
+        requests:
+          storage: 20Gi
+      storageClassName: fast-ssd
+
+---
+# PostgreSQL Service
+apiVersion: v1
+kind: Service
+metadata:
+  name: postgres
+  namespace: emas
+  labels:
+    app: postgres
+    component: database
+spec:
+  type: ClusterIP
+  ports:
+  - port: 5432
+    targetPort: 5432
+    name: postgres
+  selector:
+    app: postgres
+
+---
+# Redis Deployment
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: redis
+  namespace: emas
+  labels:
+    app: redis
+    component: cache
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: redis
+  template:
+    metadata:
+      labels:
+        app: redis
+        component: cache
+    spec:
+      containers:
+      - name: redis
+        image: redis:7-alpine
+        ports:
+        - containerPort: 6379
+          name: redis
+        command:
+        - redis-server
+        - --requirepass
+        - "$(REDIS_PASSWORD)"
+        - --appendonly
+        - "yes"
+        env:
+        - name: REDIS_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: emas-secrets
+              key: REDIS_PASSWORD
+        volumeMounts:
+        - name: redis-data
+          mountPath: /data
+        resources:
+          requests:
+            memory: "512Mi"
+            cpu: "250m"
+          limits:
+            memory: "1Gi"
+            cpu: "500m"
+        livenessProbe:
+          exec:
+            command:
+            - redis-cli
+            - -a
+            - "$(REDIS_PASSWORD)"
+            - ping
+          initialDelaySeconds: 30
+          periodSeconds: 10
+        readinessProbe:
+          exec:
+            command:
+            - redis-cli
+            - -a
+            - "$(REDIS_PASSWORD)"
+            - ping
+          initialDelaySeconds: 5
+          periodSeconds: 5
+      volumes:
+      - name: redis-data
+        persistentVolumeClaim:
+          claimName: redis-pvc
+
+---
+# Redis Service
+apiVersion: v1
+kind: Service
+metadata:
+  name: redis
+  namespace: emas
+  labels:
+    app: redis
+    component: cache
+spec:
+  type: ClusterIP
+  ports:
+  - port: 6379
+    targetPort: 6379
+    name: redis
+  selector:
+    app: redis
+
+---
+# NATS Deployment
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nats
+  namespace: emas
+  labels:
+    app: nats
+    component: messaging
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: nats
+  template:
+    metadata:
+      labels:
+        app: nats
+        component: messaging
+    spec:
+      containers:
+      - name: nats
+        image: nats:2.10-alpine
+        ports:
+        - containerPort: 4222
+          name: client
+        - containerPort: 8222
+          name: monitoring
+        command:
+        - -js
+        - -m
+        - "8222"
+        env:
+        - name: NATS_USER
+          valueFrom:
+            secretKeyRef:
+              name: emas-secrets
+              key: NATS_USER
+        - name: NATS_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: emas-secrets
+              key: NATS_PASSWORD
+        volumeMounts:
+        - name: nats-data
+          mountPath: /data
+        resources:
+          requests:
+            memory: "256Mi"
+            cpu: "100m"
+          limits:
+            memory: "512Mi"
+            cpu: "250m"
+        livenessProbe:
+          exec:
+            command:
+            - nats
+            - status
+          initialDelaySeconds: 30
+          periodSeconds: 10
+        readinessProbe:
+          exec:
+            command:
+            - nats
+            - status
+          initialDelaySeconds: 5
+          periodSeconds: 5
+      volumes:
+      - name: nats-data
+        persistentVolumeClaim:
+          claimName: nats-pvc
+
+---
+# NATS Service
+apiVersion: v1
+kind: Service
+metadata:
+  name: nats
+  namespace: emas
+  labels:
+    app: nats
+    component: messaging
+spec:
+  type: ClusterIP
+  ports:
+  - port: 4222
+    targetPort: 4222
+    name: client
+  - port: 8222
+    targetPort: 8222
+    name: monitoring
+  selector:
+    app: nats

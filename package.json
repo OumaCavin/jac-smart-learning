@@ -1,0 +1,129 @@
+{
+  "name": "enterprise-multi-agent-system",
+  "version": "1.0.0",
+  "description": "Production-ready, scalable multi-agent system with JAC programming language integration",
+  "main": "index.js",
+  "scripts": {
+    "dev": "concurrently \"npm run dev:backend\" \"npm run dev:frontend\"",
+    "dev:backend": "cd backend && npm run dev",
+    "dev:frontend": "cd frontend && npm run dev",
+    "build": "npm run build:backend && npm run build:frontend",
+    "build:backend": "cd backend && npm run build",
+    "build:frontend": "cd frontend && npm run build",
+    "test": "npm run test:unit && npm run test:integration",
+    "test:unit": "npm run test:backend:unit && npm run test:frontend:unit",
+    "test:integration": "npm run test:backend:integration && npm run test:frontend:integration",
+    "test:backend:unit": "cd backend && npm run test:unit",
+    "test:frontend:unit": "cd frontend && npm run test:unit",
+    "test:backend:integration": "cd backend && npm run test:integration",
+    "test:frontend:integration": "cd frontend && npm run test:integration",
+    "test:e2e": "npm run test:backend:e2e",
+    "test:backend:e2e": "cd backend && npm run test:e2e",
+    "test:load": "npm run test:backend:load",
+    "test:backend:load": "cd backend && npm run test:load",
+    "test:security": "npm run test:backend:security",
+    "test:backend:security": "cd backend && npm run test:security",
+    "lint": "npm run lint:backend && npm run lint:frontend",
+    "lint:backend": "cd backend && npm run lint",
+    "lint:frontend": "cd frontend && npm run lint",
+    "format": "npm run format:backend && npm run format:frontend",
+    "format:backend": "cd backend && npm run format",
+    "format:frontend": "cd frontend && npm run format",
+    "coverage": "npm run coverage:backend && npm run coverage:frontend",
+    "coverage:backend": "cd backend && npm run coverage",
+    "coverage:frontend": "cd frontend && npm run coverage",
+    "docker:build": "docker-compose build",
+    "docker:up": "docker-compose up -d",
+    "docker:down": "docker-compose down",
+    "docker:logs": "docker-compose logs -f",
+    "k8s:deploy": "kubectl apply -f k8s/manifests/",
+    "k8s:rollback": "kubectl rollout undo deployment/emas-backend",
+    "security:scan": "npm audit && npm run test:security",
+    "setup:dev": "npm install && cd backend && npm install && cd ../frontend && npm install",
+    "setup:hooks": "npx husky install && npx husky add .husky/pre-commit \"npm run lint\" && npx husky add .husky/commit-msg \"npx commitlint --edit $1\"",
+    "release": "npm run build && npm run test && npm publish",
+    "deploy:staging": "npm run build && npm run test:integration && echo 'Deploying to staging...'",
+    "deploy:production": "npm run build && npm run test:integration && npm run test:load && echo 'Deploying to production...'"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/OumaCavin/jac-smart-learning.git"
+  },
+  "author": {
+    "name": "Cavin Otieno",
+    "email": "cavin.otieno012@gmail.com",
+    "url": "https://www.linkedin.com/in/cavin-otieno-9a841260/",
+    "phone": "+254708101604"
+  },
+  "license": "MIT",
+  "keywords": [
+    "multi-agent-system",
+    "microservices",
+    "kubernetes",
+    "docker",
+    "websocket",
+    "react",
+    "typescript",
+    "python",
+    "fastapi",
+    "postgresql",
+    "redis",
+    "prometheus",
+    "grafana",
+    "jaeger",
+    "nlp",
+    "code-analysis",
+    "quality-assessment",
+    "real-time",
+    "scalable",
+    "enterprise",
+    "jac",
+    "jaseci"
+  ],
+  "bugs": {
+    "url": "https://github.com/OumaCavin/jac-smart-learning/issues"
+  },
+  "homepage": "https://github.com/OumaCavin/jac-smart-learning#readme",
+  "engines": {
+    "node": ">=18.0.0",
+    "npm": ">=8.0.0"
+  },
+  "workspaces": [
+    "backend",
+    "frontend"
+  ],
+  "devDependencies": {
+    "@commitlint/cli": "^17.0.0",
+    "@commitlint/config-conventional": "^17.0.0",
+    "concurrently": "^7.6.0",
+    "husky": "^8.0.0",
+    "lint-staged": "^13.0.0",
+    "prettier": "^2.8.0"
+  },
+  "lint-staged": {
+    "*.{js,jsx,ts,tsx}": [
+      "eslint --fix",
+      "prettier --write"
+    ],
+    "*.{py}": [
+      "black --fix",
+      "isort --profile black",
+      "flake8"
+    ],
+    "*.{json,md,yaml,yml}": [
+      "prettier --write"
+    ]
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged",
+      "commit-msg": "commitlint -E HUSKY_GIT_PARAMS"
+    }
+  },
+  "commitlint": {
+    "extends": [
+      "@commitlint/config-conventional"
+    ]
+  },
+  "version": "1.0.0"
+}
