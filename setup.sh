@@ -110,6 +110,11 @@ setup_databases() {
         # Check if containers are running
         if docker-compose ps | grep -q "Up"; then
             print_success "Databases started successfully!"
+            print_status "Services available:"
+            print_status "  - PostgreSQL: localhost:5432 (DB: jac_learning, User: cavin)"
+            print_status "  - Redis: localhost:6379"
+            print_status "  - Neo4j Browser: http://localhost:7474 (neo4j/neo4j)"
+            print_status "  - Neo4j: bolt://localhost:7687"
         else
             print_error "Failed to start databases. Please check docker-compose logs."
             exit 1

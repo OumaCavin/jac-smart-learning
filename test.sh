@@ -34,8 +34,8 @@ test_databases() {
     
     # Test PostgreSQL
     if command -v psql &> /dev/null; then
-        if psql -h localhost -U postgres -c "SELECT version();" &> /dev/null; then
-            print_success "PostgreSQL connection successful"
+        if psql -h localhost -U cavin -d jac_learning -c "SELECT version();" &> /dev/null; then
+            print_success "PostgreSQL connection successful (DB: jac_learning)"
         else
             print_error "PostgreSQL connection failed"
         fi
@@ -54,15 +54,12 @@ test_databases() {
         print_warning "Redis client not installed, skipping Redis test"
     fi
     
-    # Test Neo4j (if neo4j-admin is available)
-    if command -v neo4j-admin &> /dev/null; then
-        if curl -s http://localhost:7474 &> /dev/null; then
-            print_success "Neo4j connection successful"
-        else
-            print_error "Neo4j connection failed"
-        fi
+    # Test Neo4j connection
+    if curl -s http://localhost:7474 &> /dev/null; then
+        print_success "Neo4j connection successful"
+        print_status "Neo4j Browser available at http://localhost:7474 (login: neo4j/neo4j)"
     else
-        print_warning "Neo4j not available, skipping Neo4j test"
+        print_error "Neo4j connection failed"
     fi
 }
 
