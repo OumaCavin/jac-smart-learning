@@ -274,7 +274,6 @@
 .activity-item:last-child::before {
   display: none;
 }
-}
 
 /* Code syntax highlighting */
 .code-block {
