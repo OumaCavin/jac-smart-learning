@@ -46,7 +46,12 @@ check_prerequisites() {
     
     # Check Python version
     python_version=$(python3 --version | cut -d' ' -f2)
-    if [[ $(echo "$python_version >= 3.9" | bc) -eq 0 ]]; then
+    # Extract major and minor version numbers
+    major_version=$(echo $python_version | cut -d'.' -f1)
+    minor_version=$(echo $python_version | cut -d'.' -f2)
+    
+    # Check if Python 3.9+ (including 3.12)
+    if [[ "$major_version" -lt 3 ]] || [[ "$major_version" -eq 3 && "$minor_version" -lt 9 ]]; then
         print_error "Python 3.9+ is required. Current version: $python_version"
         exit 1
     fi
