@@ -54,24 +54,24 @@ const Sidebar = ({ collapsed, onToggle }: SidebarProps) => {
 
   return (
     <div className={cn(
-      'flex flex-col bg-white border-r border-gray-200 transition-all duration-300',
-      collapsed ? 'w-16' : 'w-64'
+      'flex flex-col bg-white/95 backdrop-blur-sm border-r border-gray-100 transition-all duration-500 shadow-lg',
+      collapsed ? 'w-20' : 'w-72'
     )}>
-      <div className="flex items-center justify-between h-16 px-4 border-b border-gray-200">
-        <div className="flex items-center space-x-3">
-          <div className="w-8 h-8 bg-gradient-to-r from-blue-500 to-purple-600 rounded-lg flex items-center justify-center">
-            <Bot className="w-5 h-5 text-white" />
+      <div className="flex items-center justify-between h-20 px-6 border-b border-gray-100 bg-gradient-to-r from-white to-gray-50">
+        <div className="flex items-center space-x-4">
+          <div className="w-10 h-10 bg-gradient-to-r from-blue-600 to-purple-600 rounded-2xl flex items-center justify-center shadow-lg">
+            <Bot className="w-6 h-6 text-white" />
           </div>
           {!collapsed && (
             <div>
-              <h1 className="text-lg font-semibold text-gray-900">EMAS</h1>
-              <p className="text-xs text-gray-500">Multi-Agent System</p>
+              <h1 className="text-xl font-bold bg-gradient-to-r from-gray-900 to-gray-700 bg-clip-text text-transparent">EMAS</h1>
+              <p className="text-xs text-gray-500 font-medium">Multi-Agent System</p>
             </div>
           )}
         </div>
         <button
           onClick={onToggle}
-          className="p-1 rounded-lg hover:bg-gray-100 transition-colors"
+          className="p-2 rounded-xl hover:bg-gray-100 transition-all duration-200 transform hover:scale-105"
         >
           {collapsed ? (
             <ChevronRight className="w-4 h-4 text-gray-600" />
@@ -81,7 +81,7 @@ const Sidebar = ({ collapsed, onToggle }: SidebarProps) => {
         </button>
       </div>
 
-      <nav className="flex-1 px-2 py-4 space-y-1">
+      <nav className="flex-1 px-4 py-6 space-y-2">
         {navigation.map((item) => {
           const Icon = item.icon
           return (
@@ -89,34 +89,31 @@ const Sidebar = ({ collapsed, onToggle }: SidebarProps) => {
               key={item.name}
               to={item.href}
               className={cn(
-                'group flex items-center px-3 py-2 text-sm font-medium rounded-lg transition-colors',
-                item.current
-                  ? 'bg-blue-50 text-blue-700 border-r-2 border-blue-700'
-                  : 'text-gray-700 hover:bg-gray-50 hover:text-gray-900'
+                item.current ? 'sidebar-nav-item-active' : 'sidebar-nav-item-inactive'
               )}
             >
               <Icon
                 className={cn(
                   'flex-shrink-0 w-5 h-5',
-                  item.current ? 'text-blue-700' : 'text-gray-400 group-hover:text-gray-500'
+                  item.current ? 'text-blue-700' : 'text-gray-400 group-hover:text-gray-600'
                 )}
               />
               {!collapsed && (
-                <span className="ml-3">{item.name}</span>
+                <span className="ml-3 font-medium">{item.name}</span>
               )}
             </Link>
           )
         })}
       </nav>
 
-      <div className="p-4 border-t border-gray-200">
-        <div className="flex items-center space-x-3">
-          <div className="w-8 h-8 bg-gray-300 rounded-full flex items-center justify-center">
-            <span className="text-sm font-medium text-gray-700">CO</span>
+      <div className="p-6 border-t border-gray-100 bg-gradient-to-r from-gray-50 to-white">
+        <div className="flex items-center space-x-4">
+          <div className="w-10 h-10 bg-gradient-to-r from-gray-400 to-gray-500 rounded-2xl flex items-center justify-center shadow-md">
+            <span className="text-sm font-bold text-white">CO</span>
           </div>
           {!collapsed && (
             <div className="flex-1 min-w-0">
-              <p className="text-sm font-medium text-gray-900 truncate">
+              <p className="text-sm font-semibold text-gray-900 truncate">
                 Cavin Otieno
               </p>
               <p className="text-xs text-gray-500 truncate">

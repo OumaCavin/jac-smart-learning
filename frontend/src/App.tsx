@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react'
 import { Routes, Route } from 'react-router-dom'
 import { motion } from 'framer-motion'
-import { Activity, Bot, Database, Settings, Users } from 'lucide-react'
 
 import Sidebar from './components/Sidebar'
 import Header from './components/Header'
@@ -42,24 +41,24 @@ const App = () => {
   }, [agents, updateAgentStatus])
 
   return (
-    <div className="flex h-screen bg-gray-50">
+    <div className="flex h-screen bg-gradient-to-br from-gray-50 via-white to-gray-50">
       <Sidebar 
         collapsed={sidebarCollapsed} 
         onToggle={() => setSidebarCollapsed(!sidebarCollapsed)}
       />
       
-      <div className="flex-1 flex flex-col overflow-hidden">
+      <div className="flex-1 flex flex-col overflow-hidden backdrop-blur-sm">
         <Header 
           connected={isConnected}
           onMenuToggle={() => setSidebarCollapsed(!sidebarCollapsed)}
         />
         
-        <main className="flex-1 overflow-x-hidden overflow-y-auto bg-gray-50">
+        <main className="flex-1 overflow-x-hidden overflow-y-auto bg-transparent">
           <motion.div 
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5 }}
-            className="container mx-auto px-6 py-8"
+            transition={{ duration: 0.6, ease: "easeOut" }}
+            className="container mx-auto px-8 py-10"
           >
             <Routes>
               <Route path="/" element={<Dashboard />} />
