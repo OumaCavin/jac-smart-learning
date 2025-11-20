@@ -41,24 +41,24 @@ const App = () => {
   }, [agents, updateAgentStatus])
 
   return (
-    <div className="flex h-screen bg-gradient-to-br from-gray-50 via-white to-gray-50">
+    <div className="d-flex" style={{ minHeight: '100vh', background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)' }}>
       <Sidebar 
         collapsed={sidebarCollapsed} 
         onToggle={() => setSidebarCollapsed(!sidebarCollapsed)}
       />
       
-      <div className="flex-1 flex flex-col overflow-hidden backdrop-blur-sm">
+      <div className="flex-grow-1 d-flex flex-column overflow-hidden" style={{ backdropFilter: 'blur(16px)' }}>
         <Header 
           connected={isConnected}
           onMenuToggle={() => setSidebarCollapsed(!sidebarCollapsed)}
         />
         
-        <main className="flex-1 overflow-x-hidden overflow-y-auto bg-transparent">
+        <main className="flex-grow-1 overflow-auto">
           <motion.div 
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, ease: "easeOut" }}
-            className="container mx-auto px-8 py-10"
+            className="container-fluid px-4 py-4"
           >
             <Routes>
               <Route path="/" element={<Dashboard />} />
