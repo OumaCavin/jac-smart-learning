@@ -28,25 +28,27 @@ from backend.core.config import settings
 from backend.core.database import init_db
 from backend.core.websocket import setup_websocket_handler
 from backend.api.v1.api import api_router
+from backend.api.v1.ccg import router as ccg_router
+from backend.api.v1.quality import router as quality_router
 from backend.core.middleware import setup_middleware
 from backend.core.security import setup_security
 from backend.services.agent_registry import AgentRegistry
 from backend.services.message_bus import MessageBus
-from backend.services.quality_assessment import QualityAssessmentService
-from backend.services.code_context_graph import CodeContextGraphService
+from backend.services.quality_assessment import QualityAssessmentEngine
+from backend.services.ccg_service import CCGService
 
 
 # Global services (will be initialized in startup)
 agent_registry: AgentRegistry = None
 message_bus: MessageBus = None
-quality_service: QualityAssessmentService = None
-ccg_service: CodeContextGraphService = None
+quality_engine: QualityAssessmentEngine = None
+ccg_service: CCGService = None
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     """Application lifespan management"""
-    global agent_registry, message_bus, quality_service, ccg_service
+    global agent_registry, message_bus, quality_engine, ccg_service
     
     logger.info("🚀 Starting Enterprise Multi-Agent System Backend")
     
@@ -62,11 +64,15 @@ async def lifespan(app: FastAPI):
         logger.info("📡 Initializing message bus...")
         message_bus = MessageBus()
         
-        logger.info("🎯 Initializing quality assessment service...")
-        quality_service = QualityAssessmentService()
+        logger.info("🎯 Initializing quality assessment engine...")
+        quality_engine = QualityAssessmentEngine()
         
         logger.info("🧠 Initializing code context graph service...")
-        ccg_service = CodeContextGraphService()
+        ccg_service = CCGService(
+            neo4j_uri=settings.NEO4J_URI,
+            neo4j_user=settings.NEO4J_USER,
+            neo4j_password=settings.NEO4J_PASSWORD
+        )
         
         # Start services
         logger.info("🚀 Starting core services...")
@@ -93,6 +99,8 @@ async def lifespan(app: FastAPI):
             await message_bus.stop()
         if agent_registry:
             await agent_registry.stop()
+        if ccg_service:
+            ccg_service.close()
         
         logger.info("✅ Backend shutdown completed")
 
@@ -207,7 +215,7 @@ async def root():
 @app.get("/health")
 async def health_check():
     """Health check endpoint"""
-    global agent_registry, message_bus, quality_service, ccg_service
+    global agent_registry, message_bus, quality_engine, ccg_service
     
     try:
         # Check database connectivity
@@ -225,8 +233,8 @@ async def health_check():
             "redis": "healthy",
             "agent_registry": await agent_registry.health_check() if agent_registry else "not_initialized",
             "message_bus": await message_bus.health_check() if message_bus else "not_initialized",
-            "quality_service": await quality_service.health_check() if quality_service else "not_initialized",
-            "ccg_service": await ccg_service.health_check() if ccg_service else "not_initialized"
+            "quality_engine": "healthy" if quality_engine else "not_initialized",
+            "ccg_service": "healthy" if ccg_service else "not_initialized"
         }
         
         # Check if all services are healthy
@@ -274,6 +282,8 @@ setup_security(app)
 
 # Include API routes
 app.include_router(api_router, prefix="/api/v1")
+app.include_router(ccg_router)
+app.include_router(quality_router)
 
 # Setup WebSocket handler
 setup_websocket_handler(app)

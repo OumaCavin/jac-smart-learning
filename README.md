@@ -20,11 +20,22 @@ Enterprise Multi-Agent System (EMAS) is a production-ready, scalable, and featur
 - **🤖 Multi-Agent Orchestration**: Advanced coordination system with Chain of Responsibility pattern
 - **⚡ Real-Time Updates**: WebSocket-based live progress tracking and monitoring
 - **🧠 Code Context Graph (CCG)**: Deep code understanding through AST analysis and graph relationships
-- **🎯 Quality Assessment Engine**: Multi-dimensional code evaluation (correctness, performance, security, quality, documentation)
+  - **AST Parsing**: Comprehensive parsing of Python source code
+  - **Graph Relationships**: Call graphs, inheritance hierarchies, and dependency mapping
+  - **Neo4j Storage**: Graph database for advanced query capabilities
+  - **Real-time Analysis**: Live codebase analysis and visualization
+- **🎯 Quality Assessment Engine**: Multi-dimensional code evaluation (5+ dimensions)
+  - **Correctness**: Syntax validation, type hints coverage, logical structure analysis
+  - **Performance**: Cyclomatic complexity, algorithm efficiency, nested loop detection
+  - **Security**: Vulnerability scanning, pattern detection, code injection prevention
+  - **Code Quality**: Style compliance, naming conventions, maintainability metrics
+  - **Documentation**: Docstring coverage, documentation quality, API completeness
 - **📊 Scalable Architecture**: Microservices design with Kubernetes autoscaling
 - **🔒 Enterprise Security**: Comprehensive auth, secrets management, and compliance
 - **📈 Monitoring & Observability**: Complete observability stack with Prometheus, Grafana, and Jaeger
 - **🚀 CI/CD Ready**: Automated testing, deployment, and secret scanning
+- **🧪 Comprehensive Testing**: Unit, integration, and end-to-end test suites
+- **📚 JAC Integration**: Built-in support for Jaseci programming language features
 
 ---
 
@@ -208,6 +219,117 @@ make coverage
 - **Security Scan**: Passed
 - **Performance**: < 200ms API response time
 - **Availability**: 99.9% uptime SLA
+
+---
+
+## 🔌 API Reference
+
+### Code Context Graph (CCG) API
+
+```bash
+# Analyze entire codebase
+POST /api/v1/ccg/analyze
+{
+  "source_directory": "/path/to/source",
+  "file_patterns": ["*.py"]
+}
+
+# Get file dependencies
+GET /api/v1/ccg/dependencies?file_path=src/main.py
+
+# Get call graph for function
+GET /api/v1/ccg/call-graph?function_name=process_data
+
+# Get class hierarchy
+GET /api/v1/ccg/class-hierarchy
+
+# Get CCG metrics
+GET /api/v1/ccg/metrics
+```
+
+### Quality Assessment API
+
+```bash
+# Assess single file
+POST /api/v1/quality/assess/file
+{
+  "file_path": "src/main.py",
+  "source_directory": "/path/to/project"
+}
+
+# Assess entire project
+POST /api/v1/quality/assess/project
+{
+  "project_path": "/path/to/project"
+}
+
+# Assess specific dimension
+POST /api/v1/quality/assess/dimension
+{
+  "dimension": "security",
+  "file_path": "src/main.py",
+  "source_directory": "/path/to/project"
+}
+
+# Validate code in real-time
+POST /api/v1/quality/validate/code
+{
+  "code_content": "def hello(): pass",
+  "filename": "test.py"
+}
+
+# Get available dimensions
+GET /api/v1/quality/dimensions
+```
+
+### Response Examples
+
+**CCG Analysis Response:**
+```json
+{
+  "success": true,
+  "files_processed": ["main.py", "utils.py", "models.py"],
+  "nodes_count": 45,
+  "edges_count": 78,
+  "metrics": {
+    "total_nodes": 45,
+    "total_edges": 78,
+    "node_types": {
+      "function": 12,
+      "class": 3,
+      "method": 15
+    }
+  }
+}
+```
+
+**Quality Assessment Response:**
+```json
+{
+  "success": true,
+  "file_path": "main.py",
+  "overall_score": 0.85,
+  "scores": {
+    "correctness": {
+      "dimension": "correctness",
+      "score": 0.9,
+      "level": "EXCELLENT",
+      "suggestions": ["Add type hints"]
+    },
+    "security": {
+      "dimension": "security", 
+      "score": 0.8,
+      "level": "GOOD",
+      "violations": []
+    }
+  }
+}
+```
+
+**API Documentation**
+- **Interactive Docs**: http://localhost:8000/docs
+- **ReDoc**: http://localhost:8000/redoc
+- **OpenAPI Spec**: `/openapi.json`
 
 ---
 
