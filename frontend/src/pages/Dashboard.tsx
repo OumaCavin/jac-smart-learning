@@ -91,144 +91,180 @@ const Dashboard = () => {
   ]
 
   return (
-    <div className="space-y-6">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50/30 to-indigo-50/40 p-6">
       {/* Header */}
-      <div className="mb-8">
-        <motion.h1 
-          initial={{ opacity: 0, x: -20 }}
-          animate={{ opacity: 1, x: 0 }}
-          transition={{ duration: 0.5 }}
-          className="text-4xl font-bold bg-gradient-to-r from-gray-900 to-gray-600 bg-clip-text text-transparent"
+      <div className="mb-10">
+        <motion.div
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6 }}
+          className="glass rounded-3xl p-8 shadow-soft border border-white/50"
         >
-          Dashboard
-        </motion.h1>
-        <motion.p 
-          initial={{ opacity: 0, x: -20 }}
-          animate={{ opacity: 1, x: 0 }}
-          transition={{ duration: 0.5, delay: 0.1 }}
-          className="text-gray-600 font-medium"
-        >
-          Monitor your multi-agent system in real-time
-        </motion.p>
+          <h1 className="text-5xl font-bold text-gradient mb-4">
+            Dashboard
+          </h1>
+          <p className="text-lg text-gray-600 font-medium leading-relaxed">
+            Monitor your multi-agent system in real-time
+          </p>
+        </motion.div>
       </div>
 
       {/* Key Metrics */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-10">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-12">
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
+          initial={{ opacity: 0, y: 20, scale: 0.95 }}
+          animate={{ opacity: 1, y: 0, scale: 1 }}
           transition={{ duration: 0.6, delay: 0.1 }}
-          className="metric-card group cursor-pointer"
+          className="card-interactive group"
         >
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm text-gray-500 font-semibold mb-2">Active Agents</p>
-              <p className="text-4xl font-bold text-gray-900 mb-1">{activeAgents}</p>
-              <p className="text-sm text-gray-400">of {totalAgents} total</p>
-            </div>
-            <div className="w-16 h-16 bg-gradient-to-br from-blue-100 to-blue-200 rounded-2xl flex items-center justify-center shadow-md group-hover:shadow-lg transition-all duration-300">
-              <Bot className="w-8 h-8 text-blue-600" />
+          <div className="glass rounded-3xl p-8 h-full relative overflow-hidden">
+            <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-blue-500 to-blue-600"></div>
+            <div className="flex items-center justify-between h-full">
+              <div className="space-y-3">
+                <p className="text-sm font-semibold text-gray-500 uppercase tracking-wide">Active Agents</p>
+                <p className="text-5xl font-bold text-gray-900 mb-2">{activeAgents}</p>
+                <p className="text-sm text-gray-500 font-medium">of {totalAgents} total</p>
+              </div>
+              <div className="w-20 h-20 bg-gradient-to-br from-blue-100 to-blue-200 rounded-3xl flex items-center justify-center shadow-glow group-hover:shadow-xl transition-all duration-300">
+                <Bot className="w-10 h-10 text-blue-600" />
+              </div>
             </div>
           </div>
         </motion.div>
 
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
+          initial={{ opacity: 0, y: 20, scale: 0.95 }}
+          animate={{ opacity: 1, y: 0, scale: 1 }}
           transition={{ duration: 0.6, delay: 0.2 }}
-          className="metric-card group cursor-pointer"
+          className="card-interactive group"
         >
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm text-gray-500 font-semibold mb-2">Active Projects</p>
-              <p className="text-4xl font-bold text-gray-900 mb-1">{totalProjects}</p>
-              <p className="text-sm text-gray-400">running tasks</p>
-            </div>
-            <div className="w-16 h-16 bg-gradient-to-br from-green-100 to-green-200 rounded-2xl flex items-center justify-center shadow-md group-hover:shadow-lg transition-all duration-300">
-              <Activity className="w-8 h-8 text-green-600" />
+          <div className="glass rounded-3xl p-8 h-full relative overflow-hidden">
+            <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-emerald-500 to-emerald-600"></div>
+            <div className="flex items-center justify-between h-full">
+              <div className="space-y-3">
+                <p className="text-sm font-semibold text-gray-500 uppercase tracking-wide">Active Projects</p>
+                <p className="text-5xl font-bold text-gray-900 mb-2">{totalProjects}</p>
+                <p className="text-sm text-gray-500 font-medium">running tasks</p>
+              </div>
+              <div className="w-20 h-20 bg-gradient-to-br from-emerald-100 to-emerald-200 rounded-3xl flex items-center justify-center shadow-glow group-hover:shadow-xl transition-all duration-300">
+                <Activity className="w-10 h-10 text-emerald-600" />
+              </div>
             </div>
           </div>
         </motion.div>
 
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
+          initial={{ opacity: 0, y: 20, scale: 0.95 }}
+          animate={{ opacity: 1, y: 0, scale: 1 }}
           transition={{ duration: 0.6, delay: 0.3 }}
-          className="metric-card group cursor-pointer"
+          className="card-interactive group"
         >
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm text-gray-500 font-semibold mb-2">Completed Tasks</p>
-              <p className="text-4xl font-bold text-gray-900 mb-1">{completedTasks}</p>
-              <p className="text-sm text-gray-400">this week</p>
-            </div>
-            <div className="w-16 h-16 bg-gradient-to-br from-purple-100 to-purple-200 rounded-2xl flex items-center justify-center shadow-md group-hover:shadow-lg transition-all duration-300">
-              <CheckCircle className="w-8 h-8 text-purple-600" />
+          <div className="glass rounded-3xl p-8 h-full relative overflow-hidden">
+            <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-purple-500 to-purple-600"></div>
+            <div className="flex items-center justify-between h-full">
+              <div className="space-y-3">
+                <p className="text-sm font-semibold text-gray-500 uppercase tracking-wide">Completed Tasks</p>
+                <p className="text-5xl font-bold text-gray-900 mb-2">{completedTasks}</p>
+                <p className="text-sm text-gray-500 font-medium">this week</p>
+              </div>
+              <div className="w-20 h-20 bg-gradient-to-br from-purple-100 to-purple-200 rounded-3xl flex items-center justify-center shadow-glow group-hover:shadow-xl transition-all duration-300">
+                <CheckCircle className="w-10 h-10 text-purple-600" />
+              </div>
             </div>
           </div>
         </motion.div>
 
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
+          initial={{ opacity: 0, y: 20, scale: 0.95 }}
+          animate={{ opacity: 1, y: 0, scale: 1 }}
           transition={{ duration: 0.6, delay: 0.4 }}
-          className="metric-card group cursor-pointer"
+          className="card-interactive group"
         >
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm text-gray-500 font-semibold mb-2">Pending Tasks</p>
-              <p className="text-4xl font-bold text-gray-900 mb-1">{pendingTasks}</p>
-              <p className="text-sm text-gray-400">in queue</p>
-            </div>
-            <div className="w-16 h-16 bg-gradient-to-br from-orange-100 to-orange-200 rounded-2xl flex items-center justify-center shadow-md group-hover:shadow-lg transition-all duration-300">
-              <Clock className="w-8 h-8 text-orange-600" />
+          <div className="glass rounded-3xl p-8 h-full relative overflow-hidden">
+            <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-amber-500 to-amber-600"></div>
+            <div className="flex items-center justify-between h-full">
+              <div className="space-y-3">
+                <p className="text-sm font-semibold text-gray-500 uppercase tracking-wide">Pending Tasks</p>
+                <p className="text-5xl font-bold text-gray-900 mb-2">{pendingTasks}</p>
+                <p className="text-sm text-gray-500 font-medium">in queue</p>
+              </div>
+              <div className="w-20 h-20 bg-gradient-to-br from-amber-100 to-amber-200 rounded-3xl flex items-center justify-center shadow-glow group-hover:shadow-xl transition-all duration-300">
+                <Clock className="w-10 h-10 text-amber-600" />
+              </div>
             </div>
           </div>
         </motion.div>
       </div>
 
       {/* Charts Section */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-12">
         {/* Performance Chart */}
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: 0.4 }}
-          className="lg:col-span-2 bg-white rounded-xl shadow-sm border border-gray-200 p-6"
+          initial={{ opacity: 0, y: 20, scale: 0.95 }}
+          animate={{ opacity: 1, y: 0, scale: 1 }}
+          transition={{ duration: 0.6, delay: 0.5 }}
+          className="lg:col-span-2 card p-8"
         >
-          <div className="flex items-center justify-between mb-6">
-            <h3 className="text-lg font-semibold text-gray-900">System Performance</h3>
-            <TrendingUp className="w-5 h-5 text-green-500" />
+          <div className="flex items-center justify-between mb-8">
+            <div>
+              <h3 className="text-2xl font-bold text-gray-900 mb-2">System Performance</h3>
+              <p className="text-gray-500 font-medium">Real-time task and agent metrics</p>
+            </div>
+            <div className="w-14 h-14 bg-gradient-to-br from-emerald-100 to-emerald-200 rounded-2xl flex items-center justify-center shadow-glow">
+              <TrendingUp className="w-7 h-7 text-emerald-600" />
+            </div>
           </div>
-          <div className="h-64">
+          <div className="h-80">
             <ResponsiveContainer width="100%" height="100%">
               <AreaChart data={performanceData}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
-                <XAxis dataKey="time" stroke="#666" />
-                <YAxis stroke="#666" />
+                <defs>
+                  <linearGradient id="colorTasks" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="5%" stopColor="#3B82F6" stopOpacity={0.8}/>
+                    <stop offset="95%" stopColor="#3B82F6" stopOpacity={0.1}/>
+                  </linearGradient>
+                  <linearGradient id="colorAgents" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="5%" stopColor="#10B981" stopOpacity={0.8}/>
+                    <stop offset="95%" stopColor="#10B981" stopOpacity={0.1}/>
+                  </linearGradient>
+                </defs>
+                <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
+                <XAxis 
+                  dataKey="time" 
+                  stroke="#6b7280" 
+                  fontSize={12}
+                  fontWeight={500}
+                />
+                <YAxis 
+                  stroke="#6b7280" 
+                  fontSize={12}
+                  fontWeight={500}
+                />
                 <Tooltip 
                   contentStyle={{
-                    backgroundColor: '#fff',
-                    border: '1px solid #e5e7eb',
-                    borderRadius: '8px'
+                    backgroundColor: 'rgba(255, 255, 255, 0.95)',
+                    border: '1px solid rgba(229, 231, 235, 0.5)',
+                    borderRadius: '16px',
+                    backdropFilter: 'blur(10px)',
+                    boxShadow: '0 8px 25px rgba(0, 0, 0, 0.1)',
+                    fontSize: '14px'
                   }}
                 />
                 <Area
                   type="monotone"
                   dataKey="tasks"
-                  stackId="1"
                   stroke="#3B82F6"
-                  fill="#3B82F6"
-                  fillOpacity={0.3}
+                  strokeWidth={3}
+                  fillOpacity={1}
+                  fill="url(#colorTasks)"
                   name="Tasks Completed"
                 />
                 <Area
                   type="monotone"
                   dataKey="agents"
-                  stackId="2"
                   stroke="#10B981"
-                  fill="#10B981"
-                  fillOpacity={0.3}
+                  strokeWidth={3}
+                  fillOpacity={1}
+                  fill="url(#colorAgents)"
                   name="Active Agents"
                 />
               </AreaChart>
@@ -238,26 +274,33 @@ const Dashboard = () => {
 
         {/* Agent Status Chart */}
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: 0.5 }}
-          className="bg-white rounded-xl shadow-sm border border-gray-200 p-6"
+          initial={{ opacity: 0, y: 20, scale: 0.95 }}
+          animate={{ opacity: 1, y: 0, scale: 1 }}
+          transition={{ duration: 0.6, delay: 0.6 }}
+          className="card p-8"
         >
-          <div className="flex items-center justify-between mb-6">
-            <h3 className="text-xl font-bold text-gray-900">Agent Status</h3>
-            <Bot className="w-6 h-6 text-blue-500" />
+          <div className="flex items-center justify-between mb-8">
+            <div>
+              <h3 className="text-2xl font-bold text-gray-900 mb-2">Agent Status</h3>
+              <p className="text-gray-500 font-medium">Current agent states</p>
+            </div>
+            <div className="w-14 h-14 bg-gradient-to-br from-blue-100 to-blue-200 rounded-2xl flex items-center justify-center shadow-glow">
+              <Bot className="w-7 h-7 text-blue-600" />
+            </div>
           </div>
-          <div className="h-48 mb-6">
+          <div className="h-56 mb-8">
             <ResponsiveContainer width="100%" height="100%">
               <PieChart>
                 <Pie
                   data={agentStatusData}
                   cx="50%"
                   cy="50%"
-                  innerRadius={50}
-                  outerRadius={90}
-                  paddingAngle={5}
+                  innerRadius={40}
+                  outerRadius={80}
+                  paddingAngle={8}
                   dataKey="value"
+                  stroke="white"
+                  strokeWidth={2}
                 >
                   {agentStatusData.map((entry, index) => (
                     <Cell key={`cell-${index}`} fill={entry.color} />
@@ -269,23 +312,24 @@ const Dashboard = () => {
                     border: '1px solid rgba(229, 231, 235, 0.5)',
                     borderRadius: '12px',
                     backdropFilter: 'blur(10px)',
-                    boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)'
+                    boxShadow: '0 8px 25px rgba(0, 0, 0, 0.1)',
+                    fontSize: '14px'
                   }}
                 />
               </PieChart>
             </ResponsiveContainer>
           </div>
-          <div className="space-y-3">
+          <div className="space-y-4">
             {agentStatusData.map((entry, index) => (
-              <div key={index} className="flex items-center justify-between p-3 rounded-xl hover:bg-gray-50 transition-colors">
-                <div className="flex items-center space-x-3">
+              <div key={index} className="flex items-center justify-between p-4 rounded-2xl hover:bg-gray-50 transition-all duration-200 group cursor-pointer">
+                <div className="flex items-center space-x-4">
                   <div 
-                    className="w-4 h-4 rounded-full shadow-sm"
+                    className="w-5 h-5 rounded-full shadow-sm group-hover:shadow-md transition-shadow duration-200"
                     style={{ backgroundColor: entry.color }}
                   />
                   <span className="text-sm font-semibold text-gray-700">{entry.name}</span>
                 </div>
-                <span className="text-lg font-bold text-gray-900">{entry.value}</span>
+                <span className="text-xl font-bold text-gray-900">{entry.value}</span>
               </div>
             ))}
           </div>
@@ -294,29 +338,39 @@ const Dashboard = () => {
 
       {/* Recent Activity */}
       <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5, delay: 0.6 }}
-        className="bg-white rounded-xl shadow-sm border border-gray-200 p-6"
+        initial={{ opacity: 0, y: 20, scale: 0.95 }}
+        animate={{ opacity: 1, y: 0, scale: 1 }}
+        transition={{ duration: 0.6, delay: 0.7 }}
+        className="card p-8"
       >
         <div className="flex items-center justify-between mb-8">
-          <h3 className="text-xl font-bold text-gray-900">Recent Activity</h3>
-          <Activity className="w-6 h-6 text-gray-400" />
+          <div>
+            <h3 className="text-2xl font-bold text-gray-900 mb-2">Recent Activity</h3>
+            <p className="text-gray-500 font-medium">Latest system events and updates</p>
+          </div>
+          <div className="w-14 h-14 bg-gradient-to-br from-indigo-100 to-indigo-200 rounded-2xl flex items-center justify-center shadow-glow">
+            <Activity className="w-7 h-7 text-indigo-600" />
+          </div>
         </div>
-        <div className="space-y-4">
+        <div className="space-y-6">
           {recentActivities.map((activity) => {
             const Icon = activity.icon
             return (
-              <div key={activity.id} className="flex items-start space-x-4 p-4 hover:bg-gray-50 rounded-2xl transition-all duration-300 group cursor-pointer">
-                <div className={`w-10 h-10 rounded-2xl bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center shadow-sm group-hover:shadow-md transition-all duration-300`}>
-                  <Icon className={`w-5 h-5 ${activity.color}`} />
+              <motion.div 
+                key={activity.id} 
+                className="flex items-start space-x-5 p-6 glass rounded-2xl hover:shadow-glow transition-all duration-300 group cursor-pointer"
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+              >
+                <div className={`w-14 h-14 rounded-2xl bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center shadow-sm group-hover:shadow-md transition-all duration-300 flex-shrink-0`}>
+                  <Icon className={`w-7 h-7 ${activity.color}`} />
                 </div>
                 <div className="flex-1 min-w-0">
-                  <p className="text-sm font-semibold text-gray-900 leading-relaxed">{activity.message}</p>
-                  <p className="text-xs text-gray-500 mt-1 font-medium">{activity.timestamp}</p>
+                  <p className="text-sm font-semibold text-gray-900 leading-relaxed mb-2">{activity.message}</p>
+                  <p className="text-xs text-gray-500 font-medium">{activity.timestamp}</p>
                 </div>
-                <div className="w-2 h-2 bg-gradient-to-r from-blue-400 to-purple-400 rounded-full opacity-50 group-hover:opacity-100 transition-opacity duration-300"></div>
-              </div>
+                <div className="w-3 h-3 bg-gradient-to-r from-blue-400 to-purple-400 rounded-full opacity-50 group-hover:opacity-100 group-hover:scale-110 transition-all duration-300 flex-shrink-0 mt-2"></div>
+              </motion.div>
             )
           })}
         </div>
