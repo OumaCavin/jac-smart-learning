@@ -186,49 +186,6 @@ const Dashboard = () => {
           </div>
         </motion.div>
       </div>
-          className="bg-white rounded-xl shadow-sm border border-gray-200 p-6"
-        >
-          <div className="flex items-center justify-between mb-6">
-            <h3 className="text-xl font-bold text-gray-900">System Performance</h3>
-            <TrendingUp className="w-6 h-6 text-green-500" />
-          </div>
-          <div className="h-64">
-            <ResponsiveContainer width="100%" height="100%">
-              <AreaChart data={performanceData}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
-                <XAxis dataKey="time" stroke="#666" />
-                <YAxis stroke="#666" />
-                <Tooltip 
-                  contentStyle={{
-                    backgroundColor: 'rgba(255, 255, 255, 0.95)',
-                    border: '1px solid rgba(229, 231, 235, 0.5)',
-                    borderRadius: '12px',
-                    backdropFilter: 'blur(10px)',
-                    boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)'
-                  }}
-                />
-                <Area
-                  type="monotone"
-                  dataKey="tasks"
-                  stackId="1"
-                  stroke="#3B82F6"
-                  fill="#3B82F6"
-                  fillOpacity={0.3}
-                  name="Tasks Completed"
-                />
-                <Area
-                  type="monotone"
-                  dataKey="agents"
-                  stackId="2"
-                  stroke="#10B981"
-                  fill="#10B981"
-                  fillOpacity={0.3}
-                  name="Active Agents"
-                />
-              </AreaChart>
-            </ResponsiveContainer>
-          </div>
-        </motion.div>
 
       {/* Charts Section */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -284,7 +241,7 @@ const Dashboard = () => {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: 0.5 }}
-          className="card-stats"
+          className="bg-white rounded-xl shadow-sm border border-gray-200 p-6"
         >
           <div className="flex items-center justify-between mb-6">
             <h3 className="text-xl font-bold text-gray-900">Agent Status</h3>
@@ -340,7 +297,7 @@ const Dashboard = () => {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5, delay: 0.6 }}
-        className="card-stats"
+        className="bg-white rounded-xl shadow-sm border border-gray-200 p-6"
       >
         <div className="flex items-center justify-between mb-8">
           <h3 className="text-xl font-bold text-gray-900">Recent Activity</h3>
