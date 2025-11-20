@@ -89,7 +89,14 @@ setup_backend() {
     
     # Install dependencies
     pip install -r requirements.txt
-    pip install -r requirements-dev.txt
+    
+    # Install development dependencies if file exists
+    if [ -f "requirements-dev.txt" ]; then
+        print_info "Installing development dependencies..."
+        pip install -r requirements-dev.txt
+    else
+        print_info "Skipping development dependencies (requirements-dev.txt not found)"
+    fi
     
     # Copy environment file if it doesn't exist
     if [ ! -f ".env" ]; then
