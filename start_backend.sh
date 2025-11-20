@@ -39,7 +39,7 @@ export DATABASE_URL="${DATABASE_URL:-postgresql+asyncpg://cavin:Airtel!23!23@loc
 export REDIS_URL="${REDIS_URL:-redis://localhost:6379/0}"
 export NEO4J_URI="${NEO4J_URI:-bolt://localhost:7687}"
 export NEO4J_USER="${NEO4J_USER:-neo4j}"
-export NEO4J_PASSWORD="${NEO4J_PASSWORD:-password}"
+export NEO4J_PASSWORD="${NEO4J_PASSWORD:-password123}"
 
 # API Keys
 export OPENAI_API_KEY="${OPENAI_API_KEY:-your_openai_api_key_here}"
